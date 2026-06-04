@@ -8,7 +8,7 @@ function App() {
   const [errore, setErrore] = useState('')
 
   function handleLogin() {
-    fetch('http://localhost:5086/api/auth/login', {
+    fetch('https://bibliotecaapi-production-b3e3.up.railway.app/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })

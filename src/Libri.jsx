@@ -9,7 +9,7 @@ function Libri() {
   const token = localStorage.getItem('token')
 
   useEffect(() => {
-    fetch('http://localhost:5086/api/libri', {
+    fetch('https://bibliotecaapi-production-b3e3.up.railway.app/api/libri', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     .then(r => r.json())
@@ -18,7 +18,7 @@ function Libri() {
   }, [])
 
   function handleAggiungi() {
-    fetch('http://localhost:5086/api/libri', {
+    fetch('https://bibliotecaapi-production-b3e3.up.railway.app/api/libri', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ titolo, autore, anno: parseInt(anno), genere, disponibile: true })
@@ -32,7 +32,7 @@ function Libri() {
   }
 
   function handleRimuovi(id) {
-    fetch(`http://localhost:5086/api/libri/${id}`, {
+    fetch(`https://bibliotecaapi-production-b3e3.up.railway.app/api/libri/${id}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     })
