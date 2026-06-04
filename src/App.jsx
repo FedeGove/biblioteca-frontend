@@ -1,30 +1,36 @@
-import { useState } from 'react'
-import Libri from './Libri'
+import { useState } from "react";
+import Libri from "./Libri";
 
 function App() {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [errore, setErrore] = useState('')
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [errore, setErrore] = useState("");
 
   function handleLogin() {
-    fetch('https://bibliotecaapi-production-b3e3.up.railway.app/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
-    })
-    .then(response => {
-      if (!response.ok) throw new Error('Credenziali errate')
-      return response.json()
-    })
-    .then(data => {
-      localStorage.setItem('token', data.token)
-      setIsLoggedIn(true)
-    })
-    .catch(error => setErrore(error.message))
+    fetch(
+      "https://bibliotecaapi-production-b3e3.up.railway.app/api/auth/login",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      },
+    )
+      .then((response) => {
+        if (!response.ok) throw new Error("Credenziali errate");
+        return response.json();
+      })
+      .then((data) => {
+        const payload = JSON.parse(atob(data.token.split(".")[1]));
+        const ruolo = payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+        localStorage.setItem("ruolo", ruolo);
+        localStorage.setItem("token", data.token);
+        setIsLoggedIn(true);
+      })
+      .catch((error) => setErrore(error.message));
   }
 
-  if (isLoggedIn) return <Libri />
+  if (isLoggedIn) return <Libri ruolo={localStorage.getItem('ruolo')} />;
 
   return (
     <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
@@ -34,29 +40,35 @@ function App() {
             <span className="text-white text-xl">📚</span>
           </div>
           <h1 className="text-2xl font-bold text-white">Biblioteca</h1>
-          <p className="text-slate-400 text-sm mt-1">Accedi al pannello di gestione</p>
+          <p className="text-slate-400 text-sm mt-1">
+            Accedi al pannello di gestione
+          </p>
         </div>
 
         <div className="bg-slate-800 rounded-2xl border border-slate-700 p-6 shadow-xl">
           <div className="flex flex-col gap-4">
             <div>
-              <label className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5 block">Username</label>
+              <label className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5 block">
+                Username
+              </label>
               <input
                 className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 type="text"
                 placeholder="Il tuo username"
                 value={username}
-                onChange={e => setUsername(e.target.value)}
+                onChange={(e) => setUsername(e.target.value)}
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5 block">Password</label>
+              <label className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5 block">
+                Password
+              </label>
               <input
                 className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 type="password"
                 placeholder="La tua password"
                 value={password}
-                onChange={e => setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
             {errore && (
@@ -74,7 +86,7 @@ function App() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

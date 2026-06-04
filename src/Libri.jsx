@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-function Libri() {
+function Libri({ ruolo }) {
   const [libri, setLibri] = useState([])
   const [titolo, setTitolo] = useState('')
   const [autore, setAutore] = useState('')
@@ -74,7 +74,7 @@ function Libri() {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-6">
+        <div className={`grid gap-6 ${ruolo === 'admin' ? 'grid-cols-3' : 'grid-cols-1'}`}>
           {/* Lista libri */}
           <div className="col-span-2">
             <h2 className="text-sm font-medium text-slate-400 uppercase tracking-wider mb-3">Catalogo</h2>
@@ -99,12 +99,14 @@ function Libri() {
                     <span className={`text-xs px-2 py-0.5 rounded-full border ${libro.disponibile ? 'text-green-400 bg-green-400/10 border-green-400/20' : 'text-amber-400 bg-amber-400/10 border-amber-400/20'}`}>
                       {libro.disponibile ? 'Disponibile' : 'In prestito'}
                     </span>
+                    {ruolo === 'admin' && (
                     <button
                       onClick={() => handleRimuovi(libro.id)}
                       className="text-slate-500 hover:text-red-400 transition-colors text-xs"
                     >
                       Rimuovi
                     </button>
+                    )}
                   </div>
                 </div>
               ))}
@@ -112,6 +114,7 @@ function Libri() {
           </div>
 
           {/* Form aggiunta */}
+          {ruolo === 'admin' && (
           <div>
             <h2 className="text-sm font-medium text-slate-400 uppercase tracking-wider mb-3">Aggiungi libro</h2>
             <div className="bg-slate-800 rounded-xl border border-slate-700 p-4">
@@ -140,6 +143,7 @@ function Libri() {
               </div>
             </div>
           </div>
+          )}
         </div>
       </div>
     </div>
