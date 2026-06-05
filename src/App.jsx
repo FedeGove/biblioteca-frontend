@@ -48,10 +48,11 @@ function App() {
         <div className="bg-slate-800 rounded-2xl border border-slate-700 p-6 shadow-xl">
           <div className="flex flex-col gap-4">
             <div>
-              <label className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5 block">
+              <label htmlFor="username" className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5 block">
                 Username
               </label>
               <input
+                id="username"
                 className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 type="text"
                 placeholder="Il tuo username"
@@ -60,10 +61,11 @@ function App() {
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5 block">
+              <label htmlFor="password" className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5 block">
                 Password
               </label>
               <input
+                id="password"
                 className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 type="password"
                 placeholder="La tua password"
@@ -77,6 +79,7 @@ function App() {
               </div>
             )}
             <button
+              type="button"
               onClick={handleLogin}
               className="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2.5 rounded-lg text-sm transition-colors mt-1"
             >
