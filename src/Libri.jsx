@@ -10,19 +10,20 @@ function Libri({ ruolo }) {
   const [libri, setLibri] = useState([]);
   const token = localStorage.getItem("token");
 
-  useEffect(() => {
-  const controller = new AbortController()
-
-  fetch('https://bibliotecaapi-production-b3e3.up.railway.app/api/libri', {
+  async function fetchLibri(signal) {
+  const r = await fetch('https://bibliotecaapi-production-b3e3.up.railway.app/api/libri', {
     headers: { Authorization: `Bearer ${token}` },
-    signal: controller.signal
+    signal
   })
-  .then(r => r.json())
-  .then(data => setLibri(data))
-  .catch(err => {
+  const data = await r.json()
+  setLibri(data)
+}
+
+useEffect(() => {
+  const controller = new AbortController()
+  fetchLibri(controller.signal).catch(err => {
     if (err.name !== 'AbortError') console.error(err)
   })
-
   return () => controller.abort()
 }, [token])
 
@@ -43,7 +44,7 @@ function Libri({ ruolo }) {
     })
       .then((r) => r.json())
       .then((data) => {
-        setLibri([...libri, data]);
+        setLibri(prev => [...prev, data]);
         setForm({
           titolo: "",
           autore: "",
@@ -62,7 +63,7 @@ function Libri({ ruolo }) {
         headers: { Authorization: `Bearer ${token}` },
       },
     )
-      .then(() => setLibri(libri.filter((l) => l.id !== id)))
+      .then(() => setLibri(prev => prev.filter((l) => l.id !== id)))
       .catch(console.error);
   }
 
@@ -195,6 +196,7 @@ function Libri({ ruolo }) {
                   ].map((field) => (
                     <input
                       key={field.key}
+                      aria-label={field.placeholder}
                       className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                       type="text"
                       placeholder={field.placeholder}
