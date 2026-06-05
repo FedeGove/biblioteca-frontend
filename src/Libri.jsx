@@ -1,21 +1,30 @@
 import { useEffect, useState } from "react";
 
 function Libri({ ruolo }) {
+  const [form, setForm] = useState({
+    titolo: "",
+    autore: "",
+    anno: "",
+    genere: "",
+  });
   const [libri, setLibri] = useState([]);
-  const [titolo, setTitolo] = useState("");
-  const [autore, setAutore] = useState("");
-  const [anno, setAnno] = useState("");
-  const [genere, setGenere] = useState("");
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    fetch("https://bibliotecaapi-production-b3e3.up.railway.app/api/libri", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((r) => r.json())
-      .then((data) => setLibri(data))
-      .catch(console.error);
-  }, []);
+  const controller = new AbortController()
+
+  fetch('https://bibliotecaapi-production-b3e3.up.railway.app/api/libri', {
+    headers: { Authorization: `Bearer ${token}` },
+    signal: controller.signal
+  })
+  .then(r => r.json())
+  .then(data => setLibri(data))
+  .catch(err => {
+    if (err.name !== 'AbortError') console.error(err)
+  })
+
+  return () => controller.abort()
+}, [token])
 
   function handleAggiungi() {
     fetch("https://bibliotecaapi-production-b3e3.up.railway.app/api/libri", {
@@ -25,20 +34,22 @@ function Libri({ ruolo }) {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        titolo,
-        autore,
-        anno: parseInt(anno),
-        genere,
+        titolo: form.titolo,
+        autore: form.autore,
+        anno: parseInt(form.anno),
+        genere: form.genere,
         disponibile: true,
       }),
     })
       .then((r) => r.json())
       .then((data) => {
         setLibri([...libri, data]);
-        setTitolo("");
-        setAutore("");
-        setAnno("");
-        setGenere("");
+        setForm({
+          titolo: "",
+          autore: "",
+          anno: "",
+          genere: "",
+        });
       })
       .catch(console.error);
   }
@@ -166,29 +177,29 @@ function Libri({ ruolo }) {
                 <div className="flex flex-col gap-3">
                   {[
                     {
+                      key: "titolo",
                       placeholder: "Titolo",
-                      value: titolo,
-                      onChange: setTitolo,
                     },
                     {
+                      key: "autore",
                       placeholder: "Autore",
-                      value: autore,
-                      onChange: setAutore,
                     },
-                    { placeholder: "Anno", value: anno, onChange: setAnno },
                     {
+                      key: "anno",
+                      placeholder: "Anno",
+                    },
+                    {
+                      key: "genere",
                       placeholder: "Genere",
-                      value: genere,
-                      onChange: setGenere,
                     },
                   ].map((field) => (
                     <input
-                      key={field.placeholder}
+                      key={field.key}
                       className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                       type="text"
                       placeholder={field.placeholder}
-                      value={field.value}
-                      onChange={(e) => field.onChange(e.target.value)}
+                      value={form[field.key]}
+                      onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
                     />
                   ))}
                   <button
