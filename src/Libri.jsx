@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 function Libri({ ruolo }) {
   const [form, setForm] = useState({
@@ -10,22 +10,28 @@ function Libri({ ruolo }) {
   const [libri, setLibri] = useState([]);
   const token = localStorage.getItem("token");
 
-  async function fetchLibri(signal) {
-  const r = await fetch('https://bibliotecaapi-production-b3e3.up.railway.app/api/libri', {
-    headers: { Authorization: `Bearer ${token}` },
-    signal
-  })
-  const data = await r.json()
-  setLibri(data)
-}
+  const fetchLibri = useCallback(
+    async (signal) => {
+      const r = await fetch(
+        "https://bibliotecaapi-production-b3e3.up.railway.app/api/libri",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          signal,
+        },
+      );
+      const data = await r.json();
+      setLibri(data);
+    },
+    [token],
+  );
 
-useEffect(() => {
-  const controller = new AbortController()
-  fetchLibri(controller.signal).catch(err => {
-    if (err.name !== 'AbortError') console.error(err)
-  })
-  return () => controller.abort()
-}, [token])
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchLibri(controller.signal).catch((err) => {
+      if (err.name !== "AbortError") console.error(err);
+    });
+    return () => controller.abort();
+  }, [fetchLibri]);
 
   function handleAggiungi() {
     fetch("https://bibliotecaapi-production-b3e3.up.railway.app/api/libri", {
@@ -44,7 +50,7 @@ useEffect(() => {
     })
       .then((r) => r.json())
       .then((data) => {
-        setLibri(prev => [...prev, data]);
+        setLibri((prev) => [...prev, data]);
         setForm({
           titolo: "",
           autore: "",
@@ -63,7 +69,7 @@ useEffect(() => {
         headers: { Authorization: `Bearer ${token}` },
       },
     )
-      .then(() => setLibri(prev => prev.filter((l) => l.id !== id)))
+      .then(() => setLibri((prev) => prev.filter((l) => l.id !== id)))
       .catch(console.error);
   }
 
@@ -201,7 +207,9 @@ useEffect(() => {
                       type="text"
                       placeholder={field.placeholder}
                       value={form[field.key]}
-                      onChange={(e) => setForm({ ...form, [field.key]: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, [field.key]: e.target.value })
+                      }
                     />
                   ))}
                   <button
