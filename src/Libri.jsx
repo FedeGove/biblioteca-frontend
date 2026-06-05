@@ -61,6 +61,22 @@ function Libri({ ruolo }) {
       .catch(console.error);
   }
 
+  function handlePrestito(libroId) {
+    const userId = localStorage.getItem("userId");
+    fetch(
+      `https://bibliotecaapi-production-b3e3.up.railway.app/api/libri/${libroId}/prestito/${userId}`,
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    )
+      .then((r) => r.json())
+      .then((data) => {
+        setLibri((prev) => prev.map((l) => (l.id === data.id ? data : l)));
+      })
+      .catch(console.error);
+  }
+
   function handleRimuovi(id) {
     fetch(
       `https://bibliotecaapi-production-b3e3.up.railway.app/api/libri/${id}`,
@@ -159,6 +175,15 @@ function Libri({ ruolo }) {
                     >
                       {libro.disponibile ? "Disponibile" : "In prestito"}
                     </span>
+                    {ruolo !== "admin" && libro.disponibile && (
+                      <button
+                        type="button"
+                        onClick={() => handlePrestito(libro.id)}
+                        className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
+                      >
+                        Prendi in prestito
+                      </button>
+                    )}
                     {ruolo === "admin" && (
                       <button
                         type="button"

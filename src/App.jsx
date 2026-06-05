@@ -22,7 +22,15 @@ function App() {
       })
       .then((data) => {
         const payload = JSON.parse(atob(data.token.split(".")[1]));
-        const ruolo = payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+        const ruolo =
+          payload[
+            "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+          ];
+        const userId =
+          payload[
+            "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+          ];
+        localStorage.setItem("userId", userId);
         localStorage.setItem("ruolo", ruolo);
         localStorage.setItem("token", data.token);
         setIsLoggedIn(true);
@@ -30,7 +38,7 @@ function App() {
       .catch((error) => setErrore(error.message));
   }
 
-  if (isLoggedIn) return <Libri ruolo={localStorage.getItem('ruolo')} />;
+  if (isLoggedIn) return <Libri ruolo={localStorage.getItem("ruolo")} />;
 
   return (
     <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
@@ -48,7 +56,10 @@ function App() {
         <div className="bg-slate-800 rounded-2xl border border-slate-700 p-6 shadow-xl">
           <div className="flex flex-col gap-4">
             <div>
-              <label htmlFor="username" className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5 block">
+              <label
+                htmlFor="username"
+                className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5 block"
+              >
                 Username
               </label>
               <input
@@ -61,7 +72,10 @@ function App() {
               />
             </div>
             <div>
-              <label htmlFor="password" className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5 block">
+              <label
+                htmlFor="password"
+                className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5 block"
+              >
                 Password
               </label>
               <input
